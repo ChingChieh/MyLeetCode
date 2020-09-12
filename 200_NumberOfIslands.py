@@ -1,99 +1,84 @@
 class Solution:
-    def __init__(self):
-        self.Map = []
-        self.grid = []
-        self.width = 0
-        self.length = 0
-        self.counter = 0
-        self.I = 0
-        self.J = 0
-    def goUp(self, I, J):
-        print("UP")
-        if I == 0 or self.Map[I - 1][J] or self.grid[I - 1][J] == "0":
-            return False
-        else:
-            self.I = I - 1
-            self.Map[self.I][J] = True
-            print(self.I, J)
-            return True
-    def goRight(self, I, J):
-        print("RIGHT")
-        if J == (self.width - 1) or self.Map[I][J + 1] or self.grid[I][J + 1] == "0":
-            return False
-        else:
-            self.J = J + 1
-            self.Map[I][self.J] = True
-            print(I, self.J)
-            return True
-    def goDown(self, I, J):
-        print("DOWN")
-        if I == (self.length - 1) or self.Map[I + 1][J] or self.grid[I + 1][J] == "0":
-            return False
-        else:
-            self.I = I + 1
-            self.Map[self.I][J] = True
-            print(self.I, J)
-            return True
-    def goLeft(self, I, J):
-        print("LEFT")
-        if J == 0 or self.Map[I][J - 1] or self.grid[I][J - 1] == "0":
-            return False
-        else:
-            self.J = J - 1
-            self.Map[I][self.J] = True
-            print(I, self.J)
-            return True
-
-    def markIsland(self, I, J):
-        search = True
-        c = 0
-        self.I = I
-        self.J = J
-        while(search):
-            if not self.goUp(self.I, self.J) and not self.goRight(self.I, self.J) and not self.goDown(self.I, self.J) and not self.goLeft(self.I, self.J):
-                search = False
-            c += 1
-            # if not self.goUp(I, J):
-            #     pass 
-            # elif not self.goRight(I, J):
-            #     pass 
-            # elif not self.goDown(I, J):
-            #     pass 
-            # elif not self.goLeft(I, J):
-            #     pass
-            # else:
-            #     search = False
-        
-    def numIslands(self, grid) -> int:
-        self.grid = grid
-        self.width = len(self.grid[0])
-        self.length = len(self.grid)
-
-        for i in range(len(grid)):
-            tmpList = []
-            for j in range(len(grid[i])):
+    def numIslands(self, List) -> int:
+        count = 0
+        Map = list()
+        tmpList = list()
+        for i in range(len(List)):
+            for j in range(len(List[0])):
                 tmpList.append(False)
-            self.Map.append(tmpList)
+            Map.append(tmpList)
+            tmpList = []
 
-        for i in range(len(grid)):
-            for idx, value in enumerate(grid[i]):
-                if self.Map[i][idx]:
+        for i in range(len(List)):
+            for j in range(len(List[0])):
+                if Map[i][j] == False:  #代表還沒走過
+                    Map[i][j] = True #標示成走過了
+                    if List[i][j] == "0": #可以直接跳過了
+                        continue
+                    else:
+                        # 我想從這個點開始做 recursive 然後把走過的點標起來
+                        count += 1
+                        markIsland(Map, List, i, j)
+
+                if Map[i][j] == True:   #代表走過了
                     pass
-                else:
-                    if value == "1":
-                        self.counter += 1
-                        self.Map[i][idx] = True
-                        self.markIsland(i, idx)
-                print("-----------")
-        return self.counter
 
+        print(Map)
+        return count
+def goUp(Map, List, i, j):
+    if i == 0 or Map[i - 1][j] or List[i - 1][j] == "0":
+        return False
+    else:
+        return True
+
+def goRight(Map, List, i, j):
+    if j == len(List[0]) - 1 or Map[i][j + 1] or List[i][j + 1] == "0":
+        return False
+    else:
+        return True
+
+def goDown(Map, List, i, j):
+    if i == len(List) - 1 or Map[i + 1][j] or List[i + 1][j] == "0":
+        return False
+    else:
+        return True
+
+def goLeft(Map, List, i, j):
+    if j == 0 or Map[i][j - 1] or List[i][j - 1] == "0":
+        return False
+    else:
+        return True
+
+def markIsland(Map, List, i, j):
+    # 如果怎樣都走不下去就 return False
+    up = goUp(Map, List, i, j)
+    right = goRight(Map, List, i, j)
+    down = goDown(Map, List, i, j)
+    left = goLeft(Map, List, i, j)
+    if (not up) and (not right) \
+        and (not down) and (not left):
+        return 
+    if up:
+        Map[i - 1][j] = True
+        markIsland(Map, List, i - 1, j)
+    if right:
+        Map[i][j + 1] = True
+        markIsland(Map, List, i, j + 1)
+    if down:
+        Map[i + 1][j] = True
+        markIsland(Map, List, i + 1, j)
+    if left:
+        Map[i][j - 1] = True
+        markIsland(Map, List, i, j - 1)
+    
+    return 
 
 if __name__ == "__main__":
     grid = [
         ["1","1","0","1","0"],
         ["1","1","1","1","0"],
         ["1","1","0","0","0"],
-        ["0","0","0","0","1"]
+        ["0","0","1","0","1"]
     ]
 
     sol = Solution()
